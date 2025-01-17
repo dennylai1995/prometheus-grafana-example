@@ -1,0 +1,37 @@
+version: '3.8'
+services:
+  prometheus:
+    image: prom/prometheus:v2.54.1
+    container_name: prometheus
+    restart: unless-stopped
+    user: root
+    extra_hosts:
+      - "host.docker.internal:host-gateway" # to access containers running in host mode
+    expose:
+      - 9090
+    labels:
+      observability_stack: "datasource"
+    logging:
+      driver: local
+    volumes:
+      - ./stack/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+      - ./prometheus_runtime_data:/prometheus/data
+    command: 
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.retention.size=1GB'
+      - '--web.enable-admin-api'
+
+  grafana:
+    image: grafana/grafana:11.2.0
+    container_name: grafana
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    labels:
+      observability_stack: "visualization"
+    logging:
+      driver: local
+    volumes:
+      - ./stack/grafana/provisioning:/etc/grafana/provisioning
+    env_file:
+      - ./stack/grafana/grafana.env
