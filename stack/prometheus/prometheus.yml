@@ -8,3 +8,8 @@ scrape_configs:
   - job_name: 'python_app'
     static_configs:
       - targets: ["host.docker.internal:8000"]
+  # for prometheus status dashboard on grafana
+  - job_name: 'prometheus'
+    scrape_interval: 5s
+    static_configs:
+      - targets: ['prometheus:9090']

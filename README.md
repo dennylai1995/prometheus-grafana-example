@@ -1,6 +1,18 @@
 # Prometheus With Grafana Example
 A minimum example of observability monitoring system with Prometheus and Grafana.
 
+## Quick Start
+System Requirements:
+- Linux OS (tested with `Ubuntu 20.04.6`)
+- docker (tested with version: `23.0.3`)
+- docker-compose (tested with version: `1.29.2`)
+- internet connection (for pulling docker images)
+
+Steps:
+1. `bash start.sh`: bring up the whole stack
+2. Grafana UI can be accessed by `localhost:3000` (user: admin | password: admin)
+3. `bash stop.sh`: bring down the whole stack
+
 ## Overview
 ![overview](./doc/overview.png)
 *This diagram has been reworked based on architecture diagram of Prometheus ([Prometheus official introduction](https://prometheus.io/docs/introduction/overview/#architecture)).*
