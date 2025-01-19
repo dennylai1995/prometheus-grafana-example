@@ -14,12 +14,28 @@ services:
     logging:
       driver: local
     volumes:
-      - ./stack/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+      - ./stack/prometheus:/etc/prometheus/
       - ./prometheus_runtime_data:/prometheus/data
     command: 
       - '--config.file=/etc/prometheus/prometheus.yml'
       - '--storage.tsdb.retention.size=1GB'
       - '--web.enable-admin-api'
+
+  alertmanager:
+    image: prom/alertmanager:v0.28.0
+    container_name: alertmanager
+    restart: unless-stopped
+    extra_hosts:
+      - "host.docker.internal:host-gateway" # to access notification server running on host
+    expose:
+      - 9093
+    labels:
+      observability_stack: "alertmanager"
+    volumes:
+      - ./stack/alertmanager:/etc/alertmanager
+    command: 
+      - '--config.file=/etc/alertmanager/alertmanager.yml'
+      - '--cluster.listen-address=' # disable high availability mode
 
   grafana:
     image: grafana/grafana:11.2.0

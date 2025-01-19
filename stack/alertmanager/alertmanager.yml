@@ -1,0 +1,13 @@
+# EXAMPLE: https://prometheus.io/docs/alerting/latest/notification_examples/
+# REFERENCE: https://prometheus.io/docs/alerting/latest/configuration/
+# Routing tree editor: https://www.prometheus.io/webtools/alerting/routing-tree-editor/?_gl=1*gv4p3e*_ga*MTUzMDIwNjE0NS4xNzEyMDQxMzgy*_ga_80ZM8LGB96*MTczNzI1ODcwMy4xNi4xLjE3MzcyNjM1ODkuMC4wLjA.
+
+route:
+  receiver: 'webhook-notifications'
+  group_by: [alertname]
+
+receivers:
+- name: 'webhook-notifications'
+  webhook_configs:
+  - url: 'http://host.docker.internal:8100/notify'
+    timeout: 10s
