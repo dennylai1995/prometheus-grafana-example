@@ -1,3 +1,5 @@
+# HEALTH CHECK REFERENCE: https://docs.docker.com/compose/how-tos/startup-order/ 
+
 version: '3.8'
 services:
   prometheus:
@@ -20,6 +22,37 @@ services:
       - '--config.file=/etc/prometheus/prometheus.yml'
       - '--storage.tsdb.retention.size=1GB'
       - '--web.enable-admin-api'
+    healthcheck:
+      test: ["CMD-SHELL", "wget --spider http://localhost:9090"] # --spider means don't download anything
+      start_period: 30s # initialization time
+      interval: 10s
+      retries: 5
+      timeout: 30s
+      
+  # NOTE: loki is included here for Grafana alert history storage
+  # create another loki instance for other usage (ex. log aggregation)
+  loki:
+    image: grafana/loki:3.3.2
+    container_name: loki
+    restart: unless-stopped
+    user: root
+    expose:
+      - 3100
+    labels:
+      observability_stack: "datasource"
+    logging:
+      driver: local
+    volumes:
+      - ./stack/loki:/etc/loki
+      - ./loki_runtime_data:/home/loki
+    command: 
+      - '-config.file=/etc/loki/loki.yaml'
+    healthcheck:
+      test: ["CMD-SHELL", "wget --spider http://localhost:3100/ready"] # --spider means don't download anything
+      start_period: 30s # initialization time
+      interval: 10s
+      retries: 5
+      timeout: 30s
 
   alertmanager:
     image: prom/alertmanager:v0.28.0
@@ -36,6 +69,12 @@ services:
     command: 
       - '--config.file=/etc/alertmanager/alertmanager.yml'
       - '--cluster.listen-address=' # disable high availability mode
+    healthcheck:
+      test: ["CMD-SHELL", "wget --spider http://localhost:9093"] # --spider means don't download anything
+      start_period: 30s # initialization time
+      interval: 10s
+      retries: 5
+      timeout: 30s
 
   grafana:
     image: grafana/grafana:11.2.0
@@ -49,5 +88,15 @@ services:
       driver: local
     volumes:
       - ./stack/grafana/provisioning:/etc/grafana/provisioning
+      - ./stack/grafana/grafana.ini:/etc/grafana/grafana.ini
     env_file:
       - ./stack/grafana/grafana.env
+    command:
+      - '--config=/etc/grafana/grafana.ini'
+    depends_on:
+      prometheus:
+        condition: service_healthy
+      loki:
+        condition: service_healthy
+      alertmanager:
+        condition: service_healthy

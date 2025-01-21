@@ -1,0 +1,58 @@
+# EXAMPLE: https://github.com/grafana/loki/blob/main/cmd/loki/loki-local-config.yaml
+# REFERENCE: https://grafana.com/docs/loki/latest/configure/
+# RETENTION REFERENCE: https://grafana.com/docs/loki/latest/operations/storage/retention/
+
+auth_enabled: false
+
+server:
+  http_listen_port: 3100
+
+common:
+  ring:
+    instance_addr: 127.0.0.1
+    kvstore:
+      store: inmemory
+  replication_factor: 1
+  path_prefix: /home/loki
+
+storage_config:
+  filesystem:
+    directory: /home/loki/chunks
+  tsdb_shipper:
+        active_index_directory: /home/loki/index
+        cache_location: /home/loki/index_cache
+
+schema_config:
+  configs:
+    - from: "2020-07-31"
+      index:
+          period: 24h
+          prefix: index_
+      object_store: filesystem
+      schema: v13
+      store: tsdb
+
+compactor:
+  working_directory: /home/loki/retention
+  compaction_interval: 10m
+  retention_enabled: true
+  retention_delete_delay: 2h
+  retention_delete_worker_count: 150
+  delete_request_store: filesystem
+
+limits_config:
+  retention_period: 168h # 7days
+
+# To solve loki datasource error on alert page of Grafana
+# https://community.grafana.com/t/alerts-with-loki-issue-failed-to-load-the-data-source-configuration-for-loki-unable-to-fetch-alert-rules-is-the-loki-data-source-properly-configured/69892/9
+ruler:
+  storage:
+    type: local
+    local:
+      directory: /home/loki/rules
+  rule_path: /home/loki/rules/fake/
+  alertmanager_url: http://alertmanager:9093
+  ring:
+    kvstore:
+      store: inmemory
+  enable_api: true

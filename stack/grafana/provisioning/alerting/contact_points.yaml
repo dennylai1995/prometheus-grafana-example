@@ -1,0 +1,29 @@
+# REFERENCE: https://grafana.com/docs/grafana/latest/alerting/set-up/provision-alerting-resources/file-provisioning/#import-contact-points
+
+apiVersion: 1
+
+# List of receivers that should be deleted
+deleteContactPoints:
+  # <int> organization ID, default = 1
+  - orgId: 1
+    # <string, required> unique identifier for the receiver
+    uid: deamho37k82rlh, deamho37k82rlf
+
+contactPoints:
+# NOTE: there will be an additional email integration being automatically added under [grafana-default-email] on Grafana - Contact Points UI
+  - orgId: 1
+    name: grafana-default-email
+    receivers:
+      - uid: "deamho37k82rlh"
+        type: email
+        settings:
+          addresses: <example@email.com>
+        disableResolveMessage: false
+  - orgId: 1
+    name: prometheus_alertmanager
+    receivers:
+      - uid: deamho37k82rlf
+        type: prometheus-alertmanager
+        settings:
+          url: http://alertmanager:9093
+        disableResolveMessage: false

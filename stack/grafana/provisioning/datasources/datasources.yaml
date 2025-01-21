@@ -1,8 +1,12 @@
+# REFERENCE: https://grafana.com/docs/grafana/latest/datasources/
+
 apiVersion: 1
 
 # delete old datasources before adding the new ones
 deleteDatasources:
   - name: Prometheus
+    orgId: 1
+  - name: Loki
     orgId: 1
 
 datasources:
@@ -15,3 +19,26 @@ datasources:
     editable: true
     isDefault: true
     orgId: 1
+  - name: Loki
+    type: loki
+    access: proxy
+    # Access mode - proxy (server in the UI) or direct (browser in the UI).
+    url: http://loki:3100
+    basicAuth: false
+    editable: true
+    jsonData:
+      timeout: 60
+      maxLines: 1000
+    orgId: 1
+  - name: Alertmanager
+    type: alertmanager
+    url: http://alertmanager:9093
+    access: proxy
+    jsonData:
+      # Valid options for implementation include mimir, cortex and prometheus
+      implementation: prometheus
+      # Whether or not Grafana should send alert instances to this Alertmanager
+      handleGrafanaManagedAlerts: true
+    # optionally
+    basicAuth: false
+    editable: true
