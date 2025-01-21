@@ -14,7 +14,7 @@ Steps:
 3. `bash stop.sh`: bring down the whole stack
 
 ## Overview
-![overview](./doc/overview.png)
+![overview](./doc/overview_whole.png)
 *This diagram has been reworked based on architecture diagram of Prometheus ([Prometheus official introduction](https://prometheus.io/docs/introduction/overview/#architecture)).*
 
 ## Network Port Usage
