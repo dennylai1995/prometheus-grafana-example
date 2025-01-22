@@ -59,11 +59,13 @@ services:
     container_name: alertmanager
     restart: unless-stopped
     extra_hosts:
-      - "host.docker.internal:host-gateway" # to access notification server running on host
+      - "host.docker.internal:host-gateway" # to access example notification receiver running on host
     expose:
       - 9093
     labels:
       observability_stack: "alertmanager"
+    logging:
+      driver: local
     volumes:
       - ./stack/alertmanager:/etc/alertmanager
     command: 

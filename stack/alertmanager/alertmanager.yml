@@ -9,5 +9,5 @@ route:
 receivers:
 - name: 'webhook-notifications'
   webhook_configs:
-  - url: 'http://host.docker.internal:8100/notify'
+  - url: 'http://host.docker.internal:8100/notify' # example notification receiver
     timeout: 10s
