@@ -165,7 +165,7 @@ curl -XPOST http://<prometheus_container_IP>:9090/api/v1/admin/tsdb/snapshot
 During runtime, Grafana stores data (configurations of datasources, dashboards...) to databases. To persist its data locally, one should do the followings (which is called **provision**),
 ```bash
 # provision "dashboard"
-1. Export dashboard JSON file (without sharing externally)
+1. Export dashboard JSON file (without sharing externally) from Grafana UI
 2. Put the JSON file under ./grafana/provisioning/dashboards
 3. Restart Grafana (or wait for the value of {updateIntervalSeconds})
 
@@ -216,6 +216,15 @@ docker ps --filter "label=observability_stack=visualization"
 docker ps --filter "label=observability_stack=datasource"
 # list all docker containers act as "exporter"
 docker ps --filter "label=observability_stack=exporter"
+```
+
+## Offline Docker Images
+```bash
+# save all docker images to a file, observability-images.tar.gz
+bash save_docker_images.sh
+
+# load all docker images to a machine without internet connection
+docker load --input observability-images.tar.gz
 ```
 
 ## References
